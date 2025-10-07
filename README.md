@@ -80,3 +80,85 @@ You can use Graphql;
 When you finish your challenge, after forking a repository, you **must** open a pull request to our repository. There are no limitations to the implementation, you can follow the programming paradigm, modularization, and style that you feel is the most appropriate solution.
 
 If you have any questions, please let us know.
+
+## 🚀 How to run the infrastructure
+
+**Prerequisites:**
+- [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed.
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/terreneitor4x4-hub/app-nodejs-codechallenge
+   cd app-nodejs-codechallenge
+
+2. Start the full stack (Postgres + Kafka + Zookeeper + microservices):
+   ```bash
+   docker compose up -d --build
+
+3. Check logs:
+   ```bash
+   docker compose logs -f transaction-svc antifraud-svc
+
+
+## 📡 Available Endpoints
+
+### Create a transaction
+**POST** `http://localhost:3000/transactions`
+
+**Request:**
+```json
+{
+  "accountExternalIdDebit": "Guid",
+  "accountExternalIdCredit": "Guid",
+  "tranferTypeId": 1,
+  "value": 1000
+}
+```
+
+**Response:**
+```json
+{
+  "transactionExternalId": "ab424908-71a2-4d6e-aa6d-05936122695e",
+  "accountExternalIdDebit": "Guid",
+  "accountExternalIdCredit": "Guid",
+  "tranferTypeId": 1,
+  "value": 1000,
+  "status": "pending",
+  "createdAt": "2025-10-07T03:44:47.210Z"
+}
+```
+
+### Get a transaction
+**GET** `http://localhost:3000/transactions/{transactionExternalId}`
+
+**Approved Response (value ≤ 1000):**
+```json
+{
+  "transactionExternalId": "ab424908-71a2-4d6e-aa6d-05936122695e",
+  "accountExternalIdDebit": "Guid",
+  "accountExternalIdCredit": "Guid",
+  "tranferTypeId": 1,
+  "value": 1000,
+  "status": "approved",
+  "createdAt": "2025-10-07T03:44:47.210Z"
+}
+```
+
+**Rejected Response (value > 1000):**
+```json
+{
+  "transactionExternalId": "74a5eedd-c1bc-48cd-af70-ef0bd3e0946e",
+  "accountExternalIdDebit": "Guid",
+  "accountExternalIdCredit": "Guid",
+  "tranferTypeId": 1,
+  "value": 1001,
+  "status": "rejected",
+  "createdAt": "2025-10-07T03:44:28.088Z"
+}
+```
+
+## 🗄️ Database Example
+
+Here is a snapshot of the `Transaction` table after creating some transactions:
+
+![Transactions table](./docs/db-example.png)
